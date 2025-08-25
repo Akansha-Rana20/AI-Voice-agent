@@ -1,36 +1,71 @@
+# services/tts.py
 import requests
-import os
+from typing import List, Dict, Any
+from config import MURF_API_KEY # Import the key from config
+from murf import Murf
+from pathlib import Path
 import logging
-
-MURF_BASE_URL = os.getenv("MURF_BASE_URL")
-MURF_API_KEY = os.getenv("MURF_API_KEY")
+import os
 
 logger = logging.getLogger(__name__)
 
-class TTSService:
-    @staticmethod
-    def generate_speech(text: str) -> str:
-        logger.info("Requesting Murf TTS API")
-        headers = {
-            "api-key": MURF_API_KEY,
-            "Content-Type": "application/json",
-        }
-        payload = {
-            "text": text,
-            "voiceId": "en-US-natalie",
-            "format": "MP3",
-            "sampleRate": 44100,
-            "model": "GEN2"
-        }
+MURF_API_URL = "https://api.murf.ai/v1/speech"
 
-        response = requests.post(f"{MURF_BASE_URL}/v1/speech/generate", headers=headers, json=payload)
-        if response.status_code != 200:
-            logger.error(f"Murf API error: {response.text}")
-            raise RuntimeError(f"Murf API error: {response.text}")
+# Ensure uploads folder exists
+UPLOADS_DIR = Path(__file__).resolve().parent.parent / "uploads"
+UPLOADS_DIR.mkdir(exist_ok=True)
 
-        audio_file_url = response.json().get("audioFile")
-        if not audio_file_url:
-            logger.error("No audio URL received from Murf")
-            raise RuntimeError("No audio URL received from Murf")
 
-        return audio_file_url
+def speak(text: str, output_file: str = "stream_output.wav"):
+    """
+    Convert text to speech using Murf API and save audio in uploads folder.
+    """
+    client = Murf(api_key=MURF_API_KEY)
+
+    file_path = UPLOADS_DIR / output_file
+
+    # Start with a clean file
+    open(file_path, "wb").close()
+
+    res = client.text_to_speech.stream(
+        text=text,
+        voice_id="en-US-ken",
+        style="Conversational"
+    )
+
+    audio_bytes = b""
+    for audio_chunk in res:
+        audio_bytes += audio_chunk
+        with open(file_path, "ab") as f:
+            f.write(audio_chunk)
+
+    return audio_bytes
+
+
+def convert_text_to_speech(text: str, voice_id: str = "en-US-natalie") -> str:
+    """Converts text to speech using Murf AI."""
+    if not MURF_API_KEY:
+        raise Exception("MURF_API_KEY not configured.")
+
+    headers = {"Content-Type": "application/json", "api-key": MURF_API_KEY}
+    payload = {
+        "text": text,
+        "voiceId": voice_id,
+        "format": "MP3",
+        "volume": "100%"
+    }
+    response = requests.post(f"{MURF_API_URL}/generate", json=payload, headers=headers)
+    response.raise_for_status()
+    response_data = response.json()
+    return response_data.get("audioFile")
+
+
+def get_available_voices() -> List[Dict[str, Any]]:
+    """Fetches the list of available voices from Murf AI."""
+    if not MURF_API_KEY:
+        raise Exception("MURF_API_KEY not configured.")
+
+    headers = {"Accept": "application/json", "api-key": MURF_API_KEY}
+    response = requests.get(f"{MURF_API_URL}/voices", headers=headers)
+    response.raise_for_status()
+    return response.json()
