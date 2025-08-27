@@ -30,3 +30,7 @@ def get_llm_response(user_query: str, history: List[Dict[str, Any]]) -> Tuple[st
     except Exception as e:
         logger.error(f"Error getting LLM response: {e}")
         return "I'm sorry, I encountered an error while processing your request.", history
+
+
+
+

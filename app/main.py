@@ -9,6 +9,7 @@ import base64
 import re
 import config
 from app.services import stt, llm, tts
+from app.services.agent import agent_response
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -41,7 +42,7 @@ async def websocket_endpoint(websocket: WebSocket):
         await websocket.send_json({"type": "final", "text": text})
         try:
             # 1. Get the full text response from the LLM (non-streaming)
-            full_response, updated_history = llm.get_llm_response(text, chat_history)
+            full_response, updated_history = agent_response(text, chat_history)
 
             # Update history
             chat_history.clear()

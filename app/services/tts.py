@@ -1,11 +1,10 @@
 # services/tts.py
 import requests
 from typing import List, Dict, Any
-from config import MURF_API_KEY # Import the key from config
+from config import MURF_API_KEY  # Import the key from config
 from murf import Murf
 from pathlib import Path
 import logging
-import os
 
 logger = logging.getLogger(__name__)
 
@@ -15,8 +14,11 @@ MURF_API_URL = "https://api.murf.ai/v1/speech"
 UPLOADS_DIR = Path(__file__).resolve().parent.parent / "uploads"
 UPLOADS_DIR.mkdir(exist_ok=True)
 
+# Set your default voice here (change if you want another persona/voice)
+DEFAULT_VOICE_ID = "en-US-natalie"   # 👈 Female voice
 
-def speak(text: str, output_file: str = "stream_output.wav"):
+
+def speak(text: str, output_file: str = "stream_output.wav", voice_id: str = DEFAULT_VOICE_ID):
     """
     Convert text to speech using Murf API and save audio in uploads folder.
     """
@@ -29,7 +31,7 @@ def speak(text: str, output_file: str = "stream_output.wav"):
 
     res = client.text_to_speech.stream(
         text=text,
-        voice_id="en-US-ken",
+        voice_id=voice_id,   # 👈 Now dynamic
         style="Conversational"
     )
 
@@ -42,7 +44,7 @@ def speak(text: str, output_file: str = "stream_output.wav"):
     return audio_bytes
 
 
-def convert_text_to_speech(text: str, voice_id: str = "en-US-natalie") -> str:
+def convert_text_to_speech(text: str, voice_id: str = DEFAULT_VOICE_ID) -> str:
     """Converts text to speech using Murf AI."""
     if not MURF_API_KEY:
         raise Exception("MURF_API_KEY not configured.")
@@ -50,7 +52,7 @@ def convert_text_to_speech(text: str, voice_id: str = "en-US-natalie") -> str:
     headers = {"Content-Type": "application/json", "api-key": MURF_API_KEY}
     payload = {
         "text": text,
-        "voiceId": voice_id,
+        "voiceId": voice_id,   # 👈 Now uses dynamic/default voice
         "format": "MP3",
         "volume": "100%"
     }
