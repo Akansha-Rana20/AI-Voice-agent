@@ -161,7 +161,7 @@
                             pcmData[i] = Math.max(-1, Math.min(1, inputData[i])) * 32767;
                         }
                         if (ws && ws.readyState === WebSocket.OPEN) {
-                            ws.send(pcmData);
+                            ws.send(pcmData.buffer);
                         }
                     };
 

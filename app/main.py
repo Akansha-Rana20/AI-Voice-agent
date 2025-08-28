@@ -7,12 +7,15 @@ import logging
 import asyncio
 import base64
 import re
+import inspect
 import config
 from app.services import stt, llm, tts
 from app.services.agent import agent_response
 
+
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger("voice-agent")
 
 app = FastAPI()
 
@@ -66,28 +69,44 @@ async def websocket_endpoint(websocket: WebSocket):
 
         except Exception as e:
             logging.error(f"Error in LLM/TTS pipeline: {e}")
-            await websocket.send_json({"type": "error", "text": "Sorry, something went wrong."})
+            await websocket.send_json(
+                {"type": "error", "text": "Sorry, something went wrong."}
+            )
 
     def on_final_transcript(text: str):
         logging.info(f"Final transcript received: {text}")
         asyncio.run_coroutine_threadsafe(handle_transcript(text), loop)
 
-    transcriber = stt.AssemblyAIStreamingTranscriber(on_final_callback=on_final_transcript)
+    # ✅ Initialize async AssemblyAI transcriber (no need to call connect)
+    transcriber = stt.AssemblyAIStreamingTranscriber(
+        on_final_callback=on_final_transcript
+    )
 
     try:
         while True:
             message = await websocket.receive()
 
             if "bytes" in message:  # audio chunks
-                transcriber.stream_audio(message["bytes"])
+                if inspect.iscoroutinefunction(transcriber.stream_audio):
+                    await transcriber.stream_audio(message["bytes"])
+                else:
+                    transcriber.stream_audio(message["bytes"])
+
             elif "text" in message:  # metadata or ping
                 logging.info(f"Received text from client: {message['text']}")
                 await websocket.send_json({"type": "ack", "text": "Message received"})
+
             else:
                 logging.warning(f"Unknown message type: {message}")
 
     except Exception as e:
         logging.info(f"WebSocket connection closed: {e}")
+
     finally:
-        transcriber.close()
-        logging.info("Transcription resources released.")
+        if transcriber is not None:
+            close_method = getattr(transcriber, "close", None)
+            if callable(close_method):
+                maybe_coro = close_method()
+                if maybe_coro is not None and inspect.iscoroutine(maybe_coro):
+                    await maybe_coro
+        logger.info("WebSocket connection closed.")
