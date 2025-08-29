@@ -23,14 +23,3 @@ pydub==0.25.1
 
 # Environment and configuration
 python-dotenv==1.0.0
-
-# Utilities
-pathlib  # Built into Python
-asyncio  # Built into Python
-logging  # Built into Python
-json  # Built into Python
-base64  # Built into Python
-re  # Built into Python
-time  # Built into Python
-uuid  # Built into Python
-typing  # Built into Python
