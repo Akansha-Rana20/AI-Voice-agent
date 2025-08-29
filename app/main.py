@@ -1,4 +1,4 @@
-# Fixed main.py with proper imports and error handling
+# main.py
 from pathlib import Path
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
@@ -15,8 +15,8 @@ import uuid
 
 # Import original services with fallback
 try:
-    from app.services import stt, llm, tts
-    from app.services.agent import agent_response
+    from services import stt, llm, tts
+    from services.agent import agent_response
 except ImportError as e:
     logging.warning(f"Import warning: {e}")
     # We'll handle this in the websocket endpoint
