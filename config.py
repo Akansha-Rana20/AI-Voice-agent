@@ -12,6 +12,7 @@ load_dotenv()
 MURF_API_KEY = os.getenv("MURF_API_KEY")
 ASSEMBLYAI_API_KEY = os.getenv("ASSEMBLYAI_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+MURF_DEFAULT_VOICE = "en-US-natalie"
 
 # Configure APIs and log warnings if keys are missing
 if ASSEMBLYAI_API_KEY:

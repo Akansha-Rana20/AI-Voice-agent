@@ -1,8 +1,39 @@
-fastapi
-uvicorn[standard]
-python-dotenv
-requests
-jinja2
-assemblyai
-google-generativeai
-websockets
+# Core FastAPI and server dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+websockets==12.0
+python-multipart==0.0.6
+
+# Templating and static files
+jinja2==3.1.2
+
+# AI and ML services
+google-generativeai==0.3.2
+assemblyai==0.17.0
+
+# Text-to-Speech
+murf==0.1.0
+requests==2.31.0
+
+# Web search (optional)
+google-search-results==2.4.2
+
+# Audio processing
+pydub==0.25.1
+
+# Environment and configuration
+python-dotenv==1.0.0
+
+# Database for memory (optional)
+sqlite3  # Built into Python
+
+# Utilities
+pathlib  # Built into Python
+asyncio  # Built into Python
+logging  # Built into Python
+json  # Built into Python
+base64  # Built into Python
+re  # Built into Python
+time  # Built into Python
+uuid  # Built into Python
+typing  # Built into Python

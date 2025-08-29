@@ -1,73 +1,41 @@
-# services/tts.py
-import requests
-from typing import List, Dict, Any
-from config import MURF_API_KEY  # Import the key from config
-from murf import Murf
-from pathlib import Path
+# app/services/tts.py
 import logging
+import requests
+import config
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("app.services.tts")
 
-MURF_API_URL = "https://api.murf.ai/v1/speech"
+MURF_API_URL = "https://api.murf.ai/v1/speech/generate"
 
-# Ensure uploads folder exists
-UPLOADS_DIR = Path(__file__).resolve().parent.parent / "uploads"
-UPLOADS_DIR.mkdir(exist_ok=True)
-
-# Set your default voice here (change if you want another persona/voice)
-DEFAULT_VOICE_ID = "en-US-natalie"   # 👈 Female voice
-
-
-def speak(text: str, output_file: str = "stream_output.wav", voice_id: str = DEFAULT_VOICE_ID):
+def speak(text: str, voice_id: str = "en-US-natalie", format: str = "MP3"):
     """
-    Convert text to speech using Murf API and save audio in uploads folder.
+    Wrapper to synthesize speech using Murf API.
+    Returns audio bytes or None.
     """
-    client = Murf(api_key=MURF_API_KEY)
-
-    file_path = UPLOADS_DIR / output_file
-
-    # Start with a clean file
-    open(file_path, "wb").close()
-
-    res = client.text_to_speech.stream(
-        text=text,
-        voice_id=voice_id,   # 👈 Now dynamic
-        style="Conversational"
-    )
-
-    audio_bytes = b""
-    for audio_chunk in res:
-        audio_bytes += audio_chunk
-        with open(file_path, "ab") as f:
-            f.write(audio_chunk)
-
-    return audio_bytes
-
-
-def convert_text_to_speech(text: str, voice_id: str = DEFAULT_VOICE_ID) -> str:
-    """Converts text to speech using Murf AI."""
-    if not MURF_API_KEY:
-        raise Exception("MURF_API_KEY not configured.")
-
-    headers = {"Content-Type": "application/json", "api-key": MURF_API_KEY}
-    payload = {
-        "text": text,
-        "voiceId": voice_id,   # 👈 Now uses dynamic/default voice
-        "format": "MP3",
-        "volume": "100%"
+    headers = {
+        "api-key": config.MURF_API_KEY,
+        "Content-Type": "application/json"
     }
-    response = requests.post(f"{MURF_API_URL}/generate", json=payload, headers=headers)
-    response.raise_for_status()
-    response_data = response.json()
-    return response_data.get("audioFile")
+    payload = {
+        "voiceId": voice_id,
+        "text": text,
+        "format": format
+    }
 
+    try:
+        response = requests.post(MURF_API_URL, json=payload, headers=headers)
+        response.raise_for_status()
+        data = response.json()
 
-def get_available_voices() -> List[Dict[str, Any]]:
-    """Fetches the list of available voices from Murf AI."""
-    if not MURF_API_KEY:
-        raise Exception("MURF_API_KEY not configured.")
+        audio_url = data.get("audioFile")
+        if not audio_url:
+            logger.error("Murf response missing audioFile: %s", data)
+            return None
 
-    headers = {"Accept": "application/json", "api-key": MURF_API_KEY}
-    response = requests.get(f"{MURF_API_URL}/voices", headers=headers)
-    response.raise_for_status()
-    return response.json()
+        audio_response = requests.get(audio_url)
+        audio_response.raise_for_status()
+        return audio_response.content
+
+    except Exception as e:
+        logger.error("TTS error: %s", e)
+        return None
