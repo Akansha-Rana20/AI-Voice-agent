@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI Voice Agent </title>
+    <title>AI Voice Agent Pro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -41,8 +41,10 @@
             background: var(--primary-gradient);
             min-height: 100vh;
             overflow-x: hidden;
+            overflow-y: auto; /* Allow vertical scrolling */
             position: relative;
             font-feature-settings: 'cv03', 'cv04', 'cv11';
+            scroll-behavior: smooth; /* Smooth scrolling */
         }
 
         /* Enhanced Background Animation */
@@ -171,6 +173,9 @@
             align-items: center;
             justify-content: center;
             transition: margin-left var(--animation-speed) ease;
+            min-height: 100vh;
+            overflow-y: auto; /* Allow vertical scrolling */
+            overflow-x: hidden;
         }
 
         .chat-container {
@@ -418,7 +423,7 @@
             font-weight: 500;
         }
 
-        /* Enhanced Chat Log - Made Larger */
+        /* Enhanced Chat Log - Better Zoom Support */
         .chat-log {
             flex-grow: 1;
             overflow-y: auto;
@@ -429,8 +434,9 @@
             position: relative;
             scroll-behavior: smooth;
             backdrop-filter: blur(10px);
-            min-height: 450px; /* Increased minimum height */
-            max-height: 60vh; /* Allow it to take more vertical space */
+            min-height: 300px; /* Reduced from 450px for better zoom support */
+            max-height: 50vh; /* Flexible max-height */
+            resize: vertical; /* Allow user to resize if needed */
         }
 
         .chat-log::-webkit-scrollbar {
@@ -491,12 +497,14 @@
             position: relative;
         }
 
-        /* Enhanced Recording Section */
+        /* Enhanced Chat Input - Better Zoom Support */
         .chat-input-container {
             text-align: center;
             margin-top: 2rem;
             padding-top: 2rem;
             border-top: 1px solid rgba(226, 232, 240, 0.5);
+            flex-shrink: 0; /* Prevent shrinking */
+            position: relative; /* Ensure it stays in normal document flow */
         }
 
         .record-container {
@@ -561,12 +569,15 @@
             margin-bottom: 1rem;
         }
 
-        /* Enhanced Controls */
+        /* Enhanced Controls - Better Zoom Support */
         .controls {
             display: flex;
             justify-content: center;
             gap: 1rem;
             flex-wrap: wrap;
+            margin-top: 1rem;
+            position: relative; /* Ensure proper stacking */
+            z-index: 10;
         }
 
         .control-btn {
@@ -955,7 +966,7 @@
                                 <i class="fas fa-robot"></i>
                             </div>
                         </div>
-                        <h4>AI Voice Agent</h4>
+                        <h4>AI Voice Agent Pro</h4>
                         <p>Advanced Conversational AI with Real-time Voice</p>
                     </div>
                 </div>
@@ -964,7 +975,7 @@
                 <div id="chat-log" class="chat-log">
                     <div class="message assistant">
                         <i class="fas fa-robot" style="margin-right: 8px; color: #4facfe;"></i>
-                        Welcome to AI Voice Agent! 🚀 I'm your advanced conversational AI assistant.
+                        Welcome to AI Voice Agent Pro! 🚀 I'm your advanced conversational AI assistant.
                         <br><br>
                         <strong>Quick Setup:</strong>
                         <br>• Click the ⚙️ configuration button to add your API keys
@@ -1856,27 +1867,144 @@
                 border-radius: var(--border-radius);
             }
 
-            /* Mobile optimizations */
-            @media (max-width: 768px) {
-                .floating-shape {
-                    display: none; /* Hide background shapes on mobile for performance */
-                }
-
+            /* Zoom Support - Responsive Design */
+            @media screen and (max-height: 700px),
+                   screen and (min-width: 1200px) and (max-height: 900px) {
                 .chat-container {
-                    backdrop-filter: blur(15px); /* Reduce blur on mobile */
-                    height: 95vh; /* Increased for mobile */
-                    max-width: 95vw; /* Better mobile width */
+                    min-height: auto;
+                    height: auto;
+                    max-height: none;
+                    padding: 2rem;
                 }
 
                 .chat-log {
-                    min-height: 350px; /* Adjusted for mobile */
-                    max-height: 55vh;
+                    min-height: 250px;
+                    max-height: 40vh;
+                }
+
+                .chat-header h4 {
+                    font-size: 1.8rem;
+                }
+
+                .logo {
+                    width: 60px;
+                    height: 60px;
+                    font-size: 1.6rem;
+                }
+
+                .record-btn {
+                    width: 80px;
+                    height: 80px;
+                    font-size: 1.6rem;
+                }
+
+                .main-content {
+                    align-items: flex-start;
+                    padding: 10px;
+                }
+            }
+
+            /* High Zoom Levels Support */
+            @media screen and (max-height: 600px) {
+                .chat-container {
+                    margin: 1rem 0;
+                    padding: 1.5rem;
+                    min-height: auto;
+                }
+
+                .chat-header {
+                    margin-bottom: 1rem;
+                }
+
+                .chat-header h4 {
+                    font-size: 1.5rem;
+                    margin-bottom: 0.25rem;
+                }
+
+                .chat-header p {
+                    font-size: 0.9rem;
+                }
+
+                .logo {
+                    width: 50px;
+                    height: 50px;
+                    font-size: 1.4rem;
+                }
+
+                .chat-log {
+                    min-height: 200px;
+                    max-height: 35vh;
                     padding: 1.5rem;
                 }
 
+                .record-btn {
+                    width: 70px;
+                    height: 70px;
+                    font-size: 1.4rem;
+                }
+
+                .chat-input-container {
+                    margin-top: 1.5rem;
+                    padding-top: 1.5rem;
+                }
+
+                .controls {
+                    gap: 0.5rem;
+                }
+
                 .control-btn {
-                    padding: 0.7rem 1.2rem;
-                    font-size: 0.85rem;
+                    padding: 0.6rem 1.2rem;
+                    font-size: 0.8rem;
+                }
+            }
+
+            /* Very High Zoom / Very Small Screens */
+            @media screen and (max-height: 500px) {
+                .main-content {
+                    padding: 5px;
+                    align-items: flex-start;
+                }
+
+                .chat-container {
+                    margin: 0.5rem 0;
+                    padding: 1rem;
+                    border-radius: 16px;
+                }
+
+                .chat-header {
+                    margin-bottom: 0.5rem;
+                }
+
+                .chat-header h4 {
+                    font-size: 1.3rem;
+                }
+
+                .logo {
+                    width: 40px;
+                    height: 40px;
+                    font-size: 1.2rem;
+                }
+
+                .chat-log {
+                    min-height: 150px;
+                    max-height: 30vh;
+                    padding: 1rem;
+                }
+
+                .record-btn {
+                    width: 60px;
+                    height: 60px;
+                    font-size: 1.2rem;
+                }
+
+                .control-btn {
+                    padding: 0.5rem 1rem;
+                    font-size: 0.75rem;
+                }
+
+                .status-display {
+                    font-size: 0.9rem;
+                    margin-bottom: 0.5rem;
                 }
             }
 
