@@ -1041,9 +1041,9 @@
     <!-- Enhanced JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>
-        // Initialize Mermaid
+        // Initialize Mermaid with better error handling
         mermaid.initialize({
-            startOnLoad: true,
+            startOnLoad: false, // We'll manually initialize
             theme: 'default',
             themeVariables: {
                 primaryColor: '#4facfe',
@@ -1052,6 +1052,35 @@
                 lineColor: '#4a5568',
                 secondaryColor: '#f8fafc',
                 tertiaryColor: '#edf2f7'
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            },
+            sequence: {
+                diagramMarginX: 50,
+                diagramMarginY: 10,
+                actorMargin: 50,
+                width: 150,
+                height: 65,
+                boxMargin: 10,
+                boxTextMargin: 5,
+                noteMargin: 10,
+                messageMargin: 35,
+                mirrorActors: true,
+                bottomMarginAdj: 1,
+                useMaxWidth: true,
+                rightAngles: false,
+                showSequenceNumbers: false
+            },
+            gantt: {
+                titleTopMargin: 25,
+                barHeight: 20,
+                fontSize: 11,
+                sidePadding: 75,
+                bottomPadding: 25,
+                gridLineStartPadding: 35
             }
         });
 
