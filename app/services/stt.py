@@ -1,3 +1,4 @@
+# Fixed services/stt.py for deployment - handles missing assemblyai.streaming
 import os
 import logging
 import queue

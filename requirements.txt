@@ -8,19 +8,24 @@ python-multipart==0.0.6
 jinja2==3.1.2
 
 # AI and ML services
-google-generativeai==0.3.2
-assemblyai==0.16.0
-
+google-generativeai>=0.4.0
+assemblyai>=0.17.0
 
 # Text-to-Speech
-murf==2.0.2
 requests==2.31.0
+murf>=1.0.0
 
-# Web search (optional)
+# Web search
 google-search-results==2.4.2
+
+# Environment and configuration
+python-dotenv==1.0.0
 
 # Audio processing
 pydub==0.25.1
 
-# Environment and configuration
-python-dotenv==1.0.0
+# HTTP client
+httpx==0.28.1
+
+# Additional utilities for deployment
+gunicorn==21.2.0
